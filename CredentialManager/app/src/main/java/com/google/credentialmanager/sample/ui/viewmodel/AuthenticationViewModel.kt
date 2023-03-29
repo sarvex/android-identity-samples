@@ -33,8 +33,10 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthenticationViewModel @Inject constructor(private val repository: AuthRepository) :
     ViewModel() {
+
     private val _uiState = MutableStateFlow<AuthUiState>(AuthUiState.Empty)
     val uiState: StateFlow<AuthUiState> = _uiState.asStateFlow()
+
 
     fun sendUsername(username: String) {
         viewModelScope.launch {
@@ -73,93 +75,45 @@ class AuthenticationViewModel @Inject constructor(private val repository: AuthRe
         }
 
         fun registerRequest() {
-            viewModelScope.launch {
-                repository.registerRequest()?.let { data ->
-                    _uiState.update {
-                        AuthUiState.CreationResult(data)
-                    }
-                }
-            }
+            // TODO: Call registerRequest from AuthRepository and handle the data to update the view
+
+            // TODO: Update uiState for CreationResult
+
         }
 
         fun registerResponse(credential: CreatePublicKeyCredentialResponse) {
-            viewModelScope.launch {
-                val isRegisterResponseSuccess = repository.registerResponse(credential)
-                if (isRegisterResponseSuccess) {
-                    _uiState.update {
-                        AuthUiState.MsgString(
-                            "You have successfully created credentials. Now Sign in",
-                            "register", true
-                        )
-                    }
-                } else {
-                    _uiState.update {
-                        AuthUiState.MsgString(
-                            "Some error occurred, please check logs!",
-                            "register",
-                            false
-                        )
-                    }
-                }
-            }
+            //TODO : Call registerResponse call for AuthRepository
         }
 
         fun signInRequest() {
-            viewModelScope.launch {
-                val data = repository.signinRequest()
-                data?.let { json ->
-                    _uiState.update {
-                        AuthUiState.RequestResult(json)
-                    }
-                }
-            }
+            // TODO: Call signRequest from AuthRepository and handle the data to update the view
+
+            // TODO: Update uiState for RequestResult
+
         }
 
         fun signInResponse(credential: GetCredentialResponse) {
-            viewModelScope.launch {
-                val isSuccess = repository.signinResponse(credential)
-                if (isSuccess) {
-                    _uiState.update {
-
-                        AuthUiState.MsgString(
-                            "Successfully Sign in, Navigating to Home",
-                            "signin",
-                            true
-                        )
-                    }
-                } else {
-                    _uiState.update {
-                        AuthUiState.MsgString(
-                            "Some error occurred, please check logs!",
-                            "signin",
-                            false
-                        )
-                    }
-                }
-            }
+            //TODO : Call signInResponse call for AuthRepository
         }
     }
 
+// TODO: Create a sealed class : AuthUiState
+sealed class AuthUiState {
 
-    sealed class AuthUiState {
+    object Empty : AuthUiState()
 
-        object Empty : AuthUiState()
+    class MsgString(
 
-        class MsgString(
+        val msg: String,
+        val request: String,
+        val success: Boolean
+    ) : AuthUiState()
 
-            val msg: String,
-            val request: String,
-            val success: Boolean
-        ) : AuthUiState()
+    // TODO: Create a state for CreationResult
 
-        class CreationResult(
+    // TODO: Create a state for RequestResult
 
-            val data: JSONObject
-        ) : AuthUiState()
+}
 
-        class RequestResult(
 
-            val data: JSONObject
-        ) : AuthUiState()
-    }
 

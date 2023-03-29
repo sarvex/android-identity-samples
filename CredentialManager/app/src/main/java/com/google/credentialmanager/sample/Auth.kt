@@ -72,16 +72,8 @@ class Auth(context: Context) {
         activity: Activity,
         requestResult: JSONObject
     ): CreatePublicKeyCredentialResponse? {
-        val cr = CreatePublicKeyCredentialRequest(requestResult.toString())
         var ret: CreatePublicKeyCredentialResponse? = null
-        try {
-            ret = credMan.createCredential(
-                cr,
-                activity
-            ) as CreatePublicKeyCredentialResponse
-        } catch (e: CreateCredentialException) {
-            handleFailure(e)
-        }
+        //TODO : Create Passkey
         return ret
     }
 

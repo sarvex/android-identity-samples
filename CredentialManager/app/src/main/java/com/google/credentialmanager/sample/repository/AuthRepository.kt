@@ -215,26 +215,7 @@ class AuthRepository @Inject constructor(
      * sign-in state is [SignInState.SignedIn].
      */
     suspend fun registerRequest(): JSONObject? {
-        try {
-            val sessionId = dataStore.read(SESSION_ID)
-            if (!sessionId.isNullOrEmpty()) {
-                when (val apiResult = api.registerRequest(sessionId)) {
-                    ApiResult.SignedOutFromServer -> forceSignOut()
-                    is ApiResult.Success -> {
-                        if (apiResult.sessionId != null) {
-                            dataStore.edit { prefs ->
-                                prefs[SESSION_ID] = apiResult.sessionId
-                            }
-                        }
-                        return apiResult.data
-                    }
-                }
-            } else {
-                Log.e(TAG, "Please check if session id is present")
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Cannot call registerRequest", e)
-        }
+      // TODO: Add an ability to create a passkey: Obtain the challenge and other options from the server endpoint.
         return null
     }
 
@@ -243,26 +224,7 @@ class AuthRepository @Inject constructor(
      * a call to [registerRequest] and a local  API for public key generation.
      */
     suspend fun registerResponse(credentialResponse: CreatePublicKeyCredentialResponse): Boolean {
-        try {
-            val registrationResponseJson = credentialResponse.registrationResponseJson
-            val obj = JSONObject(registrationResponseJson)
-            val response = obj.getJSONObject("response")
-            val sessionId = dataStore.read(SESSION_ID)!!
-            val credentialId = obj.getString("rawId")
-            when (val result = api.registerResponse(sessionId, response, credentialId)) {
-                ApiResult.SignedOutFromServer -> forceSignOut()
-                is ApiResult.Success -> {
-                    dataStore.edit { prefs ->
-                        result.sessionId?.let { prefs[SESSION_ID] = it }
-                        prefs[CREDENTIALS] = result.data.toStringSet()
-                        prefs[LOCAL_CREDENTIAL_ID] = credentialId
-                    }
-                }
-            }
-            return true
-        } catch (e: ApiException) {
-            Log.e(TAG, "Cannot call registerResponse", e)
-        }
+        //TODO : Finishes registering a new credential to the server.
         return false
     }
 
@@ -271,18 +233,8 @@ class AuthRepository @Inject constructor(
      * is [SignInState.SigningIn].
      */
     suspend fun signinRequest(): JSONObject? {
-        val sessionId = dataStore.read(SESSION_ID)
-        val credentialId = dataStore.read(LOCAL_CREDENTIAL_ID)
-        if (!sessionId.isNullOrEmpty() && credentialId != null) {
-            when (val apiResult = api.signinRequest(sessionId, credentialId)) {
-                ApiResult.SignedOutFromServer -> forceSignOut()
-                is ApiResult.Success -> {
+        // TODO: Obtain the challenge and other options from the server endpoint.
 
-                    return apiResult.data
-                }
-            }
-        }
-        Log.e(TAG, "Please check if session id is present")
         return null
     }
 

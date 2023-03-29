@@ -209,8 +209,8 @@ fun AuthenticationScreen(
                 modifier = Modifier.padding(top = 8.dp),
             ) {
                 Button(onClick = {
-                    //Fetch credentials for your account
-                    onRegisterRequest()
+                    //TODO : call OnRegisterRequest()
+
                 }) {
                     Text("Step 3: Register")
                 }
@@ -220,45 +220,13 @@ fun AuthenticationScreen(
                 modifier = Modifier.padding(top = 8.dp),
             ) {
                 Button(onClick = {
-                    //Fetch credentials for your account
-                    onSignInRequest()
+                // TODO: call signInRequest
                 }) {
                     Text("Step 4 : Sign in")
                 }
             }
         }
 
-        //Handle UiState values
-        when (uiState) {
-            is AuthUiState.Empty -> {}
-
-            is AuthUiState.CreationResult -> coroutineScope.launch {
-                val data = auth.createPasskey(activity, uiState.data)
-                if (data != null) {
-                    onRegisterResponse(data)
-                } else {
-                    Toast.makeText(
-                        activity,
-                        "Some error occurred, Please try registering again",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-
-            is AuthUiState.RequestResult -> coroutineScope.launch {
-                val data = auth.getPasskey(activity, uiState.data)
-                onSignInResponse(data)
-            }
-
-            is AuthUiState.MsgString -> {
-                if (uiState.success && uiState.request == "signin") {
-                    navigateToHome()
-                } else {
-                    LaunchedEffect(uiState) {
-                        Toast.makeText(activity, uiState.msg, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
+        //TODO : Handle UiState values
     }
 }
