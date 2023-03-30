@@ -243,32 +243,7 @@ class AuthRepository @Inject constructor(
      * [signinRequest] and a local API for key assertion.
      */
     suspend fun signinResponse(credentialResponse: GetCredentialResponse): Boolean {
-        try {
-            val signinResponse =
-                credentialResponse.credential.data.getString("androidx.credentials.BUNDLE_KEY_AUTHENTICATION_RESPONSE_JSON")
-            signinResponse?.let {
-                val obj = JSONObject(it)
-                val response = obj.getJSONObject("response")
-                val username = dataStore.read(USERNAME)!!
-                val sessionId = dataStore.read(SESSION_ID)!!
-                val credentialId = obj.getString("rawId")
-                when (val result = api.signinResponse(sessionId, response, credentialId)) {
-                    ApiResult.SignedOutFromServer -> forceSignOut()
-                    is ApiResult.Success -> {
-                        dataStore.edit { prefs ->
-                            result.sessionId?.let { prefs[SESSION_ID] = it }
-                            prefs[CREDENTIALS] = result.data.toStringSet()
-                            prefs[LOCAL_CREDENTIAL_ID] = credentialId
-                        }
-                        signInStateMutable.emit(SignInState.SignedIn(username))
-                        refreshCredentials()
-                    }
-                }
-            }
-            return true
-        } catch (e: ApiException) {
-            Log.e(TAG, "Cannot call registerResponse", e)
-        }
+        //TODO : Finishes signing in with a  credential
         return false
     }
 

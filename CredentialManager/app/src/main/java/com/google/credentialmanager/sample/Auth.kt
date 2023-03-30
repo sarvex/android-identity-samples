@@ -44,30 +44,6 @@ class Auth(context: Context) {
         credMan = CredentialManager.create(context)
     }
 
-    suspend fun getPasskey(
-        activity: Activity,
-        creationResult: JSONObject
-    ): GetCredentialResponse {
-        Toast.makeText(activity, "Fetching previously stored credentials", Toast.LENGTH_SHORT)
-            .show()
-        val result: GetCredentialResponse?
-        val cr = GetCredentialRequest(
-            listOf(
-                GetPublicKeyCredentialOption(
-                    creationResult.toString(),
-                    false
-                )
-            )
-        )
-        result = credMan.getCredential(cr, activity)
-        if (result.credential is PublicKeyCredential) {
-            val cred = result.credential as PublicKeyCredential
-            Log.i("TAG", "Passkey ${cred.authenticationResponseJson}")
-            return result
-        }
-        return result
-    }
-
     suspend fun createPasskey(
         activity: Activity,
         requestResult: JSONObject
